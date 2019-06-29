@@ -1,17 +1,6 @@
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- ORIGINAL SCRIPT BY Marcio FOR CFX-ESX
--- Script serveur No Brain
--- www.nobrain.org
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
+
 ESX = nil
 
-
-
---------------------------------------------------------------------------------
--- NE RIEN MODIFIER
---------------------------------------------------------------------------------
 local completepaytable = nil
 local tableupdate = false
 local temppaytable =  nil
@@ -73,8 +62,8 @@ AddEventHandler('esx:setJob', function(job)
 	PlayerData.job = job
 end)
 
-RegisterNetEvent('esx_garbagejob:setbin')
-AddEventHandler('esx_garbagejob:setbin', function(binpos, platenumber,  bags)
+RegisterNetEvent('esx_garbage:setbin')
+AddEventHandler('esx_garbage:setbin', function(binpos, platenumber,  bags)
 	if isInService then
 		if GetVehicleNumberPlateText(GetVehiclePedIsIn(GetPlayerPed(-1), false)) == platenumber then
 			work_truck = GetVehiclePedIsIn(GetPlayerPed(-1), false)
@@ -91,8 +80,8 @@ AddEventHandler('esx_garbagejob:setbin', function(binpos, platenumber,  bags)
 	end
 end)
 
-RegisterNetEvent('esx_garbagejob:addbags')
-AddEventHandler('esx_garbagejob:addbags', function(platenumber, bags, crewmember)
+RegisterNetEvent('esx_garbage:addbags')
+AddEventHandler('esx_garbage:addbags', function(platenumber, bags, crewmember)
 	if isInService then
 		if platenumb == platenumber then
 			if iscurrentboss then
@@ -116,18 +105,18 @@ AddEventHandler('esx_garbagejob:addbags', function(platenumber, bags, crewmember
 	end
 end)
 
-RegisterNetEvent('esx_garbagejob:startpayrequest')
-AddEventHandler('esx_garbagejob:startpayrequest', function(platenumber, amount)
+RegisterNetEvent('esx_garbage:startpayrequest')
+AddEventHandler('esx_garbage:startpayrequest', function(platenumber, amount)
 	if isInService then
 		if platenumb == platenumber then
-			TriggerServerEvent('esx_garbagejob:pay', amount)
+			TriggerServerEvent('esx_garbage:pay', amount)
 			platenumb = nil
 		end
 	end
 end)
 
-RegisterNetEvent('esx_garbagejob:removedbag')
-AddEventHandler('esx_garbagejob:removedbag', function(platenumber)
+RegisterNetEvent('esx_garbage:removedbag')
+AddEventHandler('esx_garbage:removedbag', function(platenumber)
 	if isInService then
 		if platenumb == platenumber then
 			currentbag = currentbag - 1
@@ -135,20 +124,20 @@ AddEventHandler('esx_garbagejob:removedbag', function(platenumber)
 	end
 end)
 
-RegisterNetEvent('esx_garbagejob:countbagtotal')
-AddEventHandler('esx_garbagejob:countbagtotal', function(platenumber)
+RegisterNetEvent('esx_garbage:countbagtotal')
+AddEventHandler('esx_garbage:countbagtotal', function(platenumber)
 	if isInService then
 		if platenumb == platenumber then
 			if not iscurrentboss then
-			TriggerServerEvent('esx_garbagejob:bagsdone', platenumb, totalbagpay)
+			TriggerServerEvent('esx_garbage:bagsdone', platenumb, totalbagpay)
 			totalbagpay = 0
 			end
 		end
 	end
 end)
 
-RegisterNetEvent('esx_garbagejob:clearjob')
-AddEventHandler('esx_garbagejob:clearjob', function(platenumber)
+RegisterNetEvent('esx_garbage:clearjob')
+AddEventHandler('esx_garbage:clearjob', function(platenumber)
 	if platenumb == platenumber then
 		trashcollectionpos = nil
 		bagsoftrash = nil
@@ -161,10 +150,6 @@ AddEventHandler('esx_garbagejob:clearjob', function(platenumber)
 	end
 
 end)
-
-
-
-
 
 -- MENUS
 function MenuCloakRoom()
@@ -240,7 +225,6 @@ function MenuVehicleSpawner()
 		table.insert(elements, {label = GetLabelText(GetDisplayNameFromVehicleModel(Config.Trucks[i])), value = Config.Trucks[i]})
 	end
 
-
 	ESX.UI.Menu.CloseAll()
 
 	ESX.UI.Menu.Open(
@@ -293,7 +277,7 @@ function IsJobgarbage()
 	end
 end
 
-AddEventHandler('esx_garbagejob:hasEnteredMarker', function(zone)
+AddEventHandler('esx_garbage:hasEnteredMarker', function(zone)
 
 	local playerPed = GetPlayerPed(-1)
 
@@ -373,7 +357,7 @@ AddEventHandler('esx_garbagejob:hasEnteredMarker', function(zone)
 
 end)
 
-AddEventHandler('esx_garbagejob:hasExitedMarker', function(zone)
+AddEventHandler('esx_garbage:hasExitedMarker', function(zone)
 	ESX.UI.Menu.CloseAll()
     CurrentAction = nil
 	CurrentActionMsg = ''
@@ -394,7 +378,7 @@ function nouvelledestination()
 	end
 	local testprint = (destination.Paye + multibagpay)
 	local temppayamount =  (destination.Paye + multibagpay) / (count + 1)
-	TriggerServerEvent('esx_garbagejob:requestpay', platenumb,  temppayamount)
+	TriggerServerEvent('esx_garbage:requestpay', platenumb,  temppayamount)
 	livraisonTotalPaye = 0
 	totalbagpay = 0
 	temppayamount = 0
@@ -592,7 +576,7 @@ function SelectBinandCrew()
 	local NewBin, NewBinDistance = ESX.Game.GetClosestObject(Config.DumpstersAvaialbe)
 	trashcollectionpos = GetEntityCoords(NewBin)
 	platenumb = GetVehicleNumberPlateText(GetVehiclePedIsIn(GetPlayerPed(-1), true))
-	TriggerServerEvent("esx_garbagejob:binselect", trashcollectionpos, platenumb, bagsoftrash)
+	TriggerServerEvent("esx_garbage:binselect", trashcollectionpos, platenumb, bagsoftrash)
 end
 
 
@@ -622,7 +606,7 @@ Citizen.CreateThread(function()
 					if dist <= 3.5 then
 						if currentbag > 0 then
 							TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_BIN", 0, true)
-							TriggerServerEvent('esx_garbagejob:bagremoval', platenumb)
+							TriggerServerEvent('esx_garbage:bagremoval', platenumb)
 							trashcollection = false
 							Citizen.Wait(4000)
 							ClearPedTasks(PlayerPedId())
@@ -646,7 +630,7 @@ Citizen.CreateThread(function()
 								if temppaytable == nil then
 									temppaytable = {}
 								end
-								TriggerServerEvent('esx_garbagejob:reportbags', platenumb)
+								TriggerServerEvent('esx_garbage:reportbags', platenumb)
 								Citizen.Wait(4000)
 								ClearPedTasks(PlayerPedId())
         	        	        setring = false
@@ -655,11 +639,11 @@ Citizen.CreateThread(function()
 								CurrentAction = nil
 								trashcollection = false
 								truckdeposit = false
-								ESX.ShowNotification("Collection finished return to truck!")
+								ESX.ShowNotification("Trabalho terminado retornar ao caminhão!")
 								while not IsPedInVehicle(GetPlayerPed(-1), work_truck, false) do
 									Citizen.Wait(0)
 								end
-								TriggerServerEvent('esx_garbagejob:endcollection', platenumb)
+								TriggerServerEvent('esx_garbage:endcollection', platenumb)
 								SetVehicleDoorShut(work_truck,5,false)
 								Citizen.Wait(2000)
 								nouvelledestination()
@@ -817,12 +801,12 @@ Citizen.CreateThread(function()
 				if isInMarker and not hasAlreadyEnteredMarker then
 					hasAlreadyEnteredMarker = true
 					lastZone                = currentZone
-					TriggerEvent('esx_garbagejob:hasEnteredMarker', currentZone)
+					TriggerEvent('esx_garbage:hasEnteredMarker', currentZone)
 				end
 
 				if not isInMarker and hasAlreadyEnteredMarker then
 					hasAlreadyEnteredMarker = false
-					TriggerEvent('esx_garbagejob:hasExitedMarker', lastZone)
+					TriggerEvent('esx_garbage:hasExitedMarker', lastZone)
 				end
 			end
 		end
@@ -968,7 +952,7 @@ Citizen.CreateThread(function()
 			plyCoords = GetEntityCoords(GetPlayerPed(-1), false)
 			ESX.Game.Utils.DrawText3D(plyCoords + vector3(0.0, 0.0, 0.1), "ID do caminhão de trabalho: "..tostring(work_truck), 0.8)
 			ESX.Game.Utils.DrawText3D(plyCoords + vector3(0.0, 0.0, 0.0), "Ação para verificar o pressionamento de botão: "..tostring(CollectionAction), 0.8)
-			ESX.Game.Utils.DrawText3D(plyCoords + vector3(0.0, 0.0, -0.1), "Depósito do caminhão: "..tostring(truckdeposit), 0.8)		
+			ESX.Game.Utils.DrawText3D(plyCoords + vector3(0.0, 0.0, -0.1), "Depósito do caminhão: "..tostring(truckdeposit), 0.8)
 			ESX.Game.Utils.DrawText3D(plyCoords + vector3(0.0, 0.0, -0.2), "Coleção Bin: "..tostring(trashcollection), 0.8)
 		end
 	end
